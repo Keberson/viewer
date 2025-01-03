@@ -5,14 +5,22 @@ import '@annotorious/react/annotorious-react.css';
 
 import Viewer from "./Viewer/Viewer";
 import {downloadUziImage} from "./Viewer/service/download";
+import {useGetUziIdsQuery} from "./Viewer/service/uzi";
 
 const Playground = () => {
+    const uziID = 'f6e7314f-9607-41a2-be2b-1b5c41115118';
+
     const [imageUrl, setImageUrl] = useState<string>('');
-    const [loading, setLoading] = useState<boolean>(false);
     const [viewerType, setViewerType] = useState<'osd' | 'img'>('osd');
     const [tool, setTool] = useState<'rectangle' | 'polygon'>('rectangle');
     const [needPopup, setNeedPopup] = useState<boolean>(false);
     const [drawingEnabled, setDrawingEnable] = useState<boolean>(false);
+    const [index, setIndex] = useState(0);
+
+    const {isLoading, data, isError} = useGetUziIdsQuery(uziID);
+
+    const callbackNextIndex = () => setIndex(index + 1);
+    const callbackPrevIndex = () => setIndex(index - 1);
 
     const getStyle = (isActive: boolean) => {
         return {
@@ -21,30 +29,34 @@ const Playground = () => {
     };
 
     useEffect(() => {
-        const downloadHandler = async () => {
-            return await downloadUziImage('f6e7314f-9607-41a2-be2b-1b5c41115118', 'c341dbb0-f592-4f20-9d14-adccd90c6c99');
-        }
+        if (data) {
+            if (imageUrl !== '') {
+                window.URL.revokeObjectURL(imageUrl);
+            }
 
-        setLoading(true);
-        downloadHandler()
-            .then(response => {
-                if (response) {
-                    setImageUrl(response);
-                }
-            })
-            .catch(error => {
-                console.error(error);
-            })
-            .finally(() => setLoading(false));
-    }, []);
+            const downloadHandler = async () => {
+                return await downloadUziImage(uziID, data[index].id);
+            }
+
+            downloadHandler()
+                .then(response => {
+                    if (response) {
+                        setImageUrl(response);
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                })
+        }
+    }, [data, index]);
 
     return (
         <div className="playground">
             {
-                loading && <span className="loader"></span>
+                (isLoading) && <span className="loader"></span>
             }
             {
-                !loading && imageUrl !== '' && (
+                imageUrl !== '' && (
                     <>
                         <div className="header"
                              style={{width: "100%", display: "flex", justifyContent: "space-between"}}>
@@ -80,8 +92,16 @@ const Playground = () => {
                             </div>
                         </div>
                         <div className="content">
-                            <Viewer viewerType={viewerType} tool={tool} needPopup={needPopup} imageUrl={imageUrl}
-                                    drawingEnabled={drawingEnabled}/>
+                            <Viewer
+                                viewerType={viewerType}
+                                tool={tool}
+                                needPopup={needPopup}
+                                imageUrl={imageUrl}
+                                drawingEnabled={drawingEnabled}
+                                callbackNext={data && index + 1 < data.length ? callbackNextIndex : undefined}
+                                callbackPrev={data && index - 1 > 0 ? callbackPrevIndex : undefined}
+                                pages={data ? {current: index + 1, length: data.length} : undefined}
+                            />
                         </div>
                     </>
                 )

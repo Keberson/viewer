@@ -15,6 +15,10 @@ interface ViewerProps {
     drawingEnabled?: boolean,
     callbackNext?: () => void,
     callbackPrev?: () => void,
+    pages?: {
+        current: number,
+        length: number
+    },
 }
 
 const Viewer: React.FC<ViewerProps> = (
@@ -25,7 +29,8 @@ const Viewer: React.FC<ViewerProps> = (
         imageUrl,
         drawingEnabled = false,
         callbackPrev = null,
-        callbackNext = null
+        callbackNext = null,
+        pages = null
     }) => {
     return (
         <div className="viewer-wrapper">
@@ -40,6 +45,13 @@ const Viewer: React.FC<ViewerProps> = (
                 callbackPrev && (
                     <div className="viewer-navigation left">
                         <button onClick={callbackPrev}><PrevIcon/></button>
+                    </div>
+                )
+            }
+            {
+                pages && (
+                    <div className="viewer-navigation top-center-label disable-show">
+                        <p>{pages.current} / {pages.length}</p>
                     </div>
                 )
             }

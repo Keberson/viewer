@@ -42,13 +42,32 @@
 }
 
 .right {
-  top: 0;
-  bottom: 0;
+  bottom: 10px;
   right: 10px;
 }
 
 .left {
-  top: 0;
-  bottom: 0;
+  bottom: 10px;
   left: 10px;
+}
+
+.top-center-label {
+  top: 10px;
+  justify-content: center;
+  align-items: start;
+}
+
+.top-center-label p {
+  background: #cecece;
+  padding: 2px 5px;
+  border-radius: 5px;
+}
+
+.disable-show {
+  opacity: 0.4;
+  transition: none;
+}
+
+.disable-show:hover {
+  background: inherit;
 }
