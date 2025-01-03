@@ -1,36 +1,52 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 
 import { OpenSeadragonAnnotationPopup, OpenSeadragonAnnotator, OpenSeadragonViewer } from "@annotorious/react";
 import CommentPopup from "../CommentPopup/CommentPopup";
-import {IViewer} from "../interfaces/IViewer";
 
-interface ViewerProps extends IViewer {}
+interface OSDViewerProps {
+    drawingEnable?: boolean,
+    needPopup?: boolean,
+    tool: "rectangle" | "polygon",
+    imageUrl: string
+}
 
-const OSDViewer: React.FC<ViewerProps> = ({ mode, tool, needPopup, image }) => {
+const OSDViewer: React.FC<OSDViewerProps> = ({ drawingEnable = false, needPopup = false, tool, imageUrl }) => {
+    const viewerOptions = useMemo(
+        () => ({
+            tileSources: {
+                type: 'image',
+                url: imageUrl,
+            },
+            prefixUrl: '/openseadragon-images/',
+        }),
+        [imageUrl]
+    );
+
     return (
-        <OpenSeadragonAnnotator
-            drawingEnabled={mode === "draw"}
-            tool={tool}
-        >
-            <OpenSeadragonViewer
-                options={{
-                    tileSources: {
-                        type: 'image',
-                        url: `data:image/png;base64,${image}`,
-                    },
-                    prefixUrl: '/openseadragon-images/'
-                }}
-                className="openseadragon"
-            />
+        <>
+        {
+            imageUrl !== '' ?
+            <OpenSeadragonAnnotator
+                drawingEnabled={drawingEnable}
+                tool={tool}
+            >
+                <OpenSeadragonViewer
+                    options={viewerOptions}
+                    className="osd"
+                />
 
-            {
-                needPopup && (
-                    <OpenSeadragonAnnotationPopup popup={props => (
-                        <CommentPopup {...props} />
-                    )} />
-                )
-            }
-        </OpenSeadragonAnnotator>
+                {
+                    needPopup && (
+                        <OpenSeadragonAnnotationPopup popup={props => (
+                            <CommentPopup {...props} />
+                        )} />
+                    )
+                }
+            </OpenSeadragonAnnotator>
+            :
+            <p style={{ width: "100%", height: "100%", margin: 0 }}>Изображение отсутствует</p>
+        }
+        </>
     );
 }
 

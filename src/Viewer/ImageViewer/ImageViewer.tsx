@@ -2,15 +2,21 @@ import React from 'react';
 
 import CommentPopup from "../CommentPopup/CommentPopup";
 import {ImageAnnotationPopup, ImageAnnotator} from "@annotorious/react";
-import {IViewer} from "../interfaces/IViewer";
 
-interface ViewerProps extends IViewer {}
+interface ImageViewerProps {
+    mode?: "click" | "drag",
+    tool: "rectangle" | "polygon",
+    needPopup: boolean,
+    imageUrl: string
+}
 
-const ImageViewer: React.FC<ViewerProps> = ({ mode, tool, needPopup, image }) => {
+const ImageViewer: React.FC<ImageViewerProps> = ({ mode = "click", tool, needPopup, imageUrl }) => {
     return (
         <>
-            <ImageAnnotator>
-                <img src={image} alt="Image" />
+            <ImageAnnotator
+                tool={tool}
+            >
+                <img src={imageUrl} alt="" className="full-height" />
             </ImageAnnotator>
 
             {needPopup &&

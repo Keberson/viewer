@@ -2,22 +2,26 @@ import React from 'react';
 
 import OSDViewer from "./OSDViewer/OSDViewer";
 import ImageViewer from "./ImageViewer/ImageViewer";
-import {IViewer} from "./interfaces/IViewer";
 
-interface ViewerProps extends IViewer {
-    viewerType: "osd" | "img"
+import './viewer.css';
+
+interface ViewerProps {
+    viewerType: "osd" | "img",
+    tool: "rectangle" | "polygon",
+    needPopup: boolean,
+    imageUrl: string
 }
 
-const Viewer: React.FC<ViewerProps> = ({ mode, tool, needPopup, viewerType, image }) => {
+const Viewer: React.FC<ViewerProps> = ({ tool, needPopup, viewerType, imageUrl }) => {
     return (
-        <>
+        <div className="viewer-wrapper">
             {
                 viewerType === "osd" ?
-                <OSDViewer  mode={mode} tool={tool} needPopup={needPopup} image={image} />
-                :
-                <ImageViewer mode={mode} tool={tool} needPopup={needPopup} image={image} />
+                    <OSDViewer tool={tool} needPopup={needPopup} imageUrl={imageUrl} />
+                    :
+                    <ImageViewer tool={tool} needPopup={needPopup} imageUrl={imageUrl} />
             }
-        </>
+        </div>
     );
 }
 
