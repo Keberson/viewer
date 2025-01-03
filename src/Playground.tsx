@@ -1,12 +1,24 @@
 import React, {useEffect, useState} from "react";
 
+import './Playground.scss';
+import '@annotorious/react/annotorious-react.css';
+
 import Viewer from "./Viewer/Viewer";
-import OSDViewer from "./Viewer/OSDViewer/OSDViewer";
-import { downloadUziImage } from "./Viewer/service/download";
+import {downloadUziImage} from "./Viewer/service/download";
 
 const Playground = () => {
     const [imageUrl, setImageUrl] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
+    const [viewerType, setViewerType] = useState<'osd' | 'img'>('osd');
+    const [tool, setTool] = useState<'rectangle' | 'polygon'>('rectangle');
+    const [needPopup, setNeedPopup] = useState<boolean>(false);
+    const [drawingEnabled, setDrawingEnable] = useState<boolean>(false);
+
+    const getStyle = (isActive: boolean) => {
+        return {
+            backgroundColor: isActive ? "green" : "red",
+        }
+    };
 
     useEffect(() => {
         const downloadHandler = async () => {
@@ -32,32 +44,47 @@ const Playground = () => {
                 loading && <span className="loader"></span>
             }
             {
-                !loading && imageUrl !== '' &&
+                !loading && imageUrl !== '' && (
                     <>
-                        <div className="header" style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
+                        <div className="header"
+                             style={{width: "100%", display: "flex", justifyContent: "space-between"}}>
                             <div style={{display: "flex", gap: 10}}>
-                                <button>Прямоугольник</button>
-                                <button>Полигон</button>
+                                <button onClick={() => setTool('rectangle')}
+                                        style={getStyle(tool === "rectangle")}>Прямоугольник
+                                </button>
+                                <button onClick={() => setTool('polygon')}
+                                        style={getStyle(tool === "polygon")}>Полигон
+                                </button>
                             </div>
                             <div style={{display: "flex", gap: 10}}>
-                                <button>Перемещать</button>
-                                <button>Создать</button>
+                                <button disabled={viewerType === "img"} onClick={() => setDrawingEnable(false)}
+                                        style={getStyle(!drawingEnabled)}>Перемещать
+                                </button>
+                                <button disabled={viewerType === "img"} onClick={() => setDrawingEnable(true)}
+                                        style={getStyle(drawingEnabled)}>Рисовать
+                                </button>
                             </div>
                             <div style={{display: "flex", gap: 10}}>
-                                <button>С попапом</button>
-                                <button>Без попапа</button>
+                                <button onClick={() => setNeedPopup(true)} style={getStyle(needPopup)}>С попапом
+                                </button>
+                                <button onClick={() => setNeedPopup(false)} style={getStyle(!needPopup)}>Без попапа
+                                </button>
+                            </div>
+                            <div style={{display: "flex", gap: 10}}>
+                                <button onClick={() => setViewerType('osd')} style={getStyle(viewerType === "osd")}>OSD
+                                    Viewer
+                                </button>
+                                <button onClick={() => setViewerType('img')}
+                                        style={getStyle(viewerType === "img")}>Image Viewer
+                                </button>
                             </div>
                         </div>
                         <div className="content">
-                            {/*<Viewer*/}
-                            {/*    tool={"polygon"}*/}
-                            {/*    needPopup={true}*/}
-                            {/*    viewerType={"osd"}*/}
-                            {/*    imageUrl={imageUrl}*/}
-                            {/*/>*/}
-                            <OSDViewer tool={"polygon"} imageUrl={imageUrl} />
+                            <Viewer viewerType={viewerType} tool={tool} needPopup={needPopup} imageUrl={imageUrl}
+                                    drawingEnabled={drawingEnabled}/>
                         </div>
                     </>
+                )
             }
         </div>
     );

@@ -1,13 +1,13 @@
 import React, {useMemo} from 'react';
 
-import { OpenSeadragonAnnotationPopup, OpenSeadragonAnnotator, OpenSeadragonViewer } from "@annotorious/react";
+import {OpenSeadragonAnnotationPopup, OpenSeadragonAnnotator, OpenSeadragonViewer} from "@annotorious/react";
 import CommentPopup from "../CommentPopup/CommentPopup";
 
 interface OSDViewerProps {
     drawingEnable?: boolean,
     needPopup?: boolean,
     tool: "rectangle" | "polygon",
-    imageUrl: string
+    imageUrl: string,
 }
 
 const OSDViewer: React.FC<OSDViewerProps> = ({ drawingEnable = false, needPopup = false, tool, imageUrl }) => {
